@@ -1,0 +1,54 @@
+% State representation: state(MonkeyPosition, MonkeyHasBanana, BoxPosition, MonkeyOnBox)
+% MonkeyPosition = atdoor / atwindow / middle
+% BoxPosition = atdoor / atwindow / middle
+% MonkeyHasBanana = has / hasnot
+% MonkeyOnBox = onfloor / onbox
+
+% Initial state: Monkey at door, box at window, no banana, monkey on floor
+initial(state(atdoor, hasnot, atwindow, onfloor)).
+
+% Goal state: Monkey has banana
+goal(state(_, has, _, _)).
+
+% -----------------------
+% Actions (Transitions)
+% -----------------------
+
+% Monkey moves from one place to another
+move(state(_, Has, Box, onfloor), 
+     state(Pos, Has, Box, onfloor)) :-
+    member(Pos, [atdoor, atwindow, middle]).
+
+% Monkey pushes box if at same position and on floor
+move(state(Pos, Has, Pos, onfloor),
+     state(NewPos, Has, NewPos, onfloor)) :-
+    member(NewPos, [atdoor, atwindow, middle]).
+
+% Monkey climbs onto box
+move(state(Pos, Has, Pos, onfloor),
+     state(Pos, Has, Pos, onbox)).
+
+% Monkey climbs down from box
+move(state(Pos, Has, Pos, onbox),
+     state(Pos, Has, Pos, onfloor)).
+
+% Monkey grabs banana (only if in middle, on box, and does not already have it)
+move(state(middle, hasnot, middle, onbox),
+     state(middle, has, middle, onbox)).
+
+% -----------------------
+% Solution Search
+% -----------------------
+
+solve(State, []) :- goal(State), !.
+solve(State, [Action | Rest]) :-
+    move(State, NewState),
+    action_name(State, NewState, Action),
+    solve(NewState, Rest).
+
+% Human-readable action names
+action_name(state(_, _, _, _), state(Pos, _, _, onfloor), move_to(Pos)) :- !.
+action_name(state(Pos, _, Pos, onfloor), state(NewPos, _, NewPos, onfloor), push_box_to(NewPos)) :- !.
+action_name(state(Pos, _, Pos, onfloor), state(Pos, _, Pos, onbox), climb_box) :- !.
+action_name(state(Pos, _, Pos, onbox), state(Pos, _, Pos, onfloor), climb_down) :- !.
+action_name(state(middle, hasnot, middle, onbox), state(middle, has, middle, onbox), grab_banana) :- !.
