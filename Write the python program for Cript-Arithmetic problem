@@ -1,0 +1,26 @@
+import itertools
+
+def solve_cryptarithmetic():
+    # Puzzle: SEND + MORE = MONEY
+    letters = "SENDMORY"  # unique letters
+    digits = "0123456789"
+
+    for perm in itertools.permutations(digits, len(letters)):
+        mapping = dict(zip(letters, perm))
+
+        # Avoid numbers starting with zero
+        if mapping['S'] == '0' or mapping['M'] == '0':
+            continue
+
+        send = int(mapping['S'] + mapping['E'] + mapping['N'] + mapping['D'])
+        more = int(mapping['M'] + mapping['O'] + mapping['R'] + mapping['E'])
+        money = int(mapping['M'] + mapping['O'] + mapping['N'] + mapping['E'] + mapping['Y'])
+
+        if send + more == money:
+            print(f"SEND={send}, MORE={more}, MONEY={money}")
+            return  # Stop after first solution
+
+    print("No solution found")
+
+if __name__ == "__main__":
+    solve_cryptarithmetic()
