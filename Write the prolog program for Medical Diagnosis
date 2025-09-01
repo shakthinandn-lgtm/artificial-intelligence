@@ -1,0 +1,78 @@
+% ----------------------------
+% Facts: Symptoms of diseases
+% ----------------------------
+
+disease(flu) :-
+    symptom(fever),
+    symptom(cough),
+    symptom(sore_throat),
+    symptom(runny_nose).
+
+disease(cold) :-
+    symptom(runny_nose),
+    symptom(sneezing),
+    symptom(sore_throat).
+
+disease(malaria) :-
+    symptom(fever),
+    symptom(chills),
+    symptom(sweating),
+    symptom(headache).
+
+disease(typhoid) :-
+    symptom(fever),
+    symptom(abdominal_pain),
+    symptom(loss_of_appetite),
+    symptom(weakness).
+
+disease(covid19) :-
+    symptom(fever),
+    symptom(cough),
+    symptom(shortness_of_breath),
+    symptom(loss_of_taste_smell).
+
+% ----------------------------
+% Dynamic declaration to allow user input
+% ----------------------------
+:- dynamic symptom/1.
+
+% ----------------------------
+% Start Diagnosis
+% ----------------------------
+
+start_diagnosis :-
+    write('Medical Diagnosis System'), nl,
+    write('Answer the following questions with yes/no:'), nl,
+    clear_symptoms,
+    ask_questions,
+    (   disease(D)
+    ->  format('~nYou may have: ~w~n', [D])
+    ;   write('~nNo matching disease found. Consult a doctor!'), nl).
+
+% ----------------------------
+% Questions about symptoms
+% ----------------------------
+
+ask_questions :-
+    ask(fever),
+    ask(cough),
+    ask(sore_throat),
+    ask(runny_nose),
+    ask(sneezing),
+    ask(chills),
+    ask(sweating),
+    ask(headache),
+    ask(abdominal_pain),
+    ask(loss_of_appetite),
+    ask(weakness),
+    ask(shortness_of_breath),
+    ask(loss_of_taste_smell).
+
+% Ask helper
+ask(Symptom) :-
+    format('Do you have ~w? (yes/no): ', [Symptom]),
+    read(Response),
+    (Response == yes -> assertz(symptom(Symptom)) ; true).
+
+% Clear old symptoms
+clear_symptoms :- retractall(symptom(_)).
