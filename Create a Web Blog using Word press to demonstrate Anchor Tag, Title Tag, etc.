@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Title Tag -->
+    <title>My HTML Tag Demo Blog</title>
+</head>
+<body>
+
+    <!-- Heading Tags -->
+    <h1>Welcome to My HTML Blog</h1>
+    <h2>Demonstrating Anchor and Title Tags</h2>
+
+    <!-- Paragraph Tag -->
+    <p>This blog demonstrates the usage of some important HTML tags in WordPress.</p>
+
+    <!-- Anchor Tag with Title Attribute -->
+    <p>
+        Visit <a href="https://www.wordpress.com" title="Click to go to WordPress official site">WordPress</a> 
+        to learn more about blogging.
+    </p>
+
+    <!-- Image Tag with Title Attribute -->
+    <p>
+        Here is an example of an image with a title attribute:  
+        <img src="https://via.placeholder.com/150" alt="Demo Image" title="This is a sample image">
+    </p>
+
+    <!-- Ordered List -->
+    <h3>Example HTML Tags Shown:</h3>
+    <ol>
+        <li>Title Tag</li>
+        <li>Anchor Tag</li>
+        <li>Image Tag</li>
+        <li>Heading Tags</li>
+        <li>Paragraph Tag</li>
+        <li>List Tags</li>
+    </ol>
+
+</body>
+</html>
