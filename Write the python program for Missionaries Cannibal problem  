@@ -1,0 +1,67 @@
+from collections import deque
+
+# State: (M_left, C_left, boat_position)
+# boat_position: 1 = left, 0 = right
+
+def is_valid(state):
+    M_left, C_left, boat = state
+    M_right = 3 - M_left
+    C_right = 3 - C_left
+
+    # No group should have negative members
+    if M_left < 0 or C_left < 0 or M_right < 0 or C_right < 0:
+        return False
+
+    # Missionaries should not be outnumbered
+    if (M_left > 0 and M_left < C_left) or (M_right > 0 and M_right < C_right):
+        return False
+
+    return True
+
+def get_successors(state):
+    M_left, C_left, boat = state
+    successors = []
+
+    if boat == 1:  # Boat on left side
+        moves = [(1,0),(2,0),(0,1),(0,2),(1,1)]  # possible moves
+        for M,C in moves:
+            new_state = (M_left - M, C_left - C, 0)
+            if is_valid(new_state):
+                successors.append(new_state)
+    else:  # Boat on right side
+        moves = [(1,0),(2,0),(0,1),(0,2),(1,1)]
+        for M,C in moves:
+            new_state = (M_left + M, C_left + C, 1)
+            if is_valid(new_state):
+                successors.append(new_state)
+
+    return successors
+
+def bfs(start, goal):
+    queue = deque([(start, [start])])
+    visited = set()
+
+    while queue:
+        (state, path) = queue.popleft()
+        if state == goal:
+            return path
+        if state in visited:
+            continue
+        visited.add(state)
+
+        for neighbor in get_successors(state):
+            queue.append((neighbor, path + [neighbor]))
+    return None
+
+if __name__ == "__main__":
+    start = (3, 3, 1)  # 3 missionaries, 3 cannibals, boat on left
+    goal = (0, 0, 0)   # everyone on right side
+
+    solution = bfs(start, goal)
+
+    if solution:
+        print("Solution found in", len(solution)-1, "steps:")
+        for step in solution:
+            print(step)
+    else:
+        print("No solution found.")
