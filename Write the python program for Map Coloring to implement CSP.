@@ -1,0 +1,49 @@
+# Map Coloring Problem using CSP (Backtracking)
+
+# Adjacency of regions (example: Australian map)
+graph = {
+    'WA': ['NT', 'SA'],
+    'NT': ['WA', 'SA', 'Q'],
+    'SA': ['WA', 'NT', 'Q', 'NSW', 'V'],
+    'Q':  ['NT', 'SA', 'NSW'],
+    'NSW': ['Q', 'SA', 'V'],
+    'V':  ['SA', 'NSW'],
+    'T':  []   # Tasmania is isolated
+}
+
+# Available colors
+colors = ['Red', 'Green', 'Blue']
+
+def is_valid(node, color, assignment):
+    for neighbor in graph[node]:
+        if neighbor in assignment and assignment[neighbor] == color:
+            return False
+    return True
+
+def backtrack(assignment):
+    # If all nodes are assigned, return solution
+    if len(assignment) == len(graph):
+        return assignment
+
+    # Pick an unassigned node
+    unassigned = [node for node in graph if node not in assignment]
+    node = unassigned[0]
+
+    for color in colors:
+        if is_valid(node, color, assignment):
+            assignment[node] = color
+            result = backtrack(assignment)
+            if result:
+                return result
+            assignment.pop(node)  # backtrack
+
+    return None
+
+if __name__ == "__main__":
+    solution = backtrack({})
+    if solution:
+        print("Map Coloring Solution:")
+        for region, color in solution.items():
+            print(f"{region} → {color}")
+    else:
+        print("No solution found")
