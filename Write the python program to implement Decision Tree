@@ -1,0 +1,72 @@
+import math
+import pandas as pd
+
+# Calculate entropy
+def entropy(target_col):
+    elements, counts = zip(*target_col.value_counts().items())
+    total = sum(counts)
+    entropy_val = 0
+    for count in counts:
+        p = count / total
+        entropy_val -= p * math.log2(p)
+    return entropy_val
+
+# Calculate Information Gain
+def info_gain(data, split_attr, target_name):
+    total_entropy = entropy(data[target_name])
+    vals, counts = zip(*data[split_attr].value_counts().items())
+    weighted_entropy = 0
+    for i in range(len(vals)):
+        subset = data[data[split_attr] == vals[i]]
+        weighted_entropy += (counts[i] / sum(counts)) * entropy(subset[target_name])
+    return total_entropy - weighted_entropy
+
+# ID3 algorithm to build tree
+def id3(data, originaldata, features, target_name, parent_class=None):
+    # If all target values are same, return that value
+    if len(data[target_name].unique()) == 1:
+        return data[target_name].iloc[0]
+
+    # If dataset is empty, return majority class of original dataset
+    elif len(data) == 0:
+        return originaldata[target_name].mode()[0]
+
+    # If features are empty, return parent class
+    elif len(features) == 0:
+        return parent_class
+
+    # Else build tree
+    else:
+        parent_class = data[target_name].mode()[0]
+        gains = [info_gain(data, feature, target_name) for feature in features]
+        best_feature = features[gains.index(max(gains))]
+        tree = {best_feature: {}}
+
+        # Branch for each value of best feature
+        for value in data[best_feature].unique():
+            subdata = data[data[best_feature] == value]
+            subtree = id3(
+                subdata,
+                originaldata,
+                [f for f in features if f != best_feature],
+                target_name,
+                parent_class
+            )
+            tree[best_feature][value] = subtree
+        return tree
+
+# Example Dataset: Play Tennis
+data = {
+    'Outlook': ['Sunny','Sunny','Overcast','Rain','Rain','Rain','Overcast','Sunny','Sunny','Rain','Sunny','Overcast','Overcast','Rain'],
+    'Temperature': ['Hot','Hot','Hot','Mild','Cool','Cool','Cool','Mild','Cool','Mild','Mild','Mild','Hot','Mild'],
+    'Humidity': ['High','High','High','High','Normal','Normal','Normal','High','Normal','Normal','Normal','High','Normal','High'],
+    'Wind': ['Weak','Strong','Weak','Weak','Weak','Strong','Strong','Weak','Weak','Weak','Strong','Strong','Weak','Strong'],
+    'PlayTennis': ['No','No','Yes','Yes','Yes','No','Yes','No','Yes','Yes','Yes','Yes','Yes','No']
+}
+
+df = pd.DataFrame(data)
+features = list(df.columns[:-1])
+target = 'PlayTennis'
+
+tree = id3(df, df, features, target)
+print("Decision Tree:", tree)
