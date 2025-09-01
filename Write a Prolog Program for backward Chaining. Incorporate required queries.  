@@ -1,0 +1,69 @@
+% ----------------------------
+% Knowledge Base (Rules)
+% ----------------------------
+rule(if(has_fever), then(has_infection)).
+rule(if(has_cough), then(has_cold)).
+rule(if(has_infection, has_rash), then(has_measles)).
+rule(if(has_infection, has_chills), then(has_malaria)).
+rule(if(has_cold, sneezing), then(has_flu)).
+
+% ----------------------------
+% Dynamic storage for facts
+% ----------------------------
+:- dynamic fact/1.
+
+% ----------------------------
+% Add a fact
+% ----------------------------
+add_fact(F) :-
+    \+ fact(F),        % only add if not already present
+    assertz(fact(F)),
+    format('Fact added: ~w~n', [F]),
+    forward_chain.      % trigger reasoning
+add_fact(_).
+
+% ----------------------------
+% Forward chaining engine
+% ----------------------------
+forward_chain :-
+    rule(if(Conditions), then(Conclusion)),
+    check_conditions(Conditions),
+    \+ fact(Conclusion),       % only add if not already known
+    assertz(fact(Conclusion)),
+    format('Derived: ~w~n', [Conclusion]),
+    forward_chain.             % continue chaining
+forward_chain.                 % stop when no new facts
+
+% ----------------------------
+% Check conditions of a rule
+% ----------------------------
+check_conditions((A, B)) :-    % multiple conditions
+    fact(A),
+    check_conditions(B).
+
+check_conditions(Condition) :- % single condition
+    fact(Condition).
+
+% ----------------------------
+% Start reasoning
+% ----------------------------
+start :-
+    write('--- Forward Chaining System ---'), nl,
+    write('Enter your facts (end with stop.)'), nl,
+    read_facts.
+
+% Read user facts until "stop."
+read_facts :-
+    read(F),
+    (F == stop -> 
+        write('--- Reasoning completed ---'), nl,
+        list_facts ;           % show all derived facts
+     add_fact(F),
+     read_facts).
+
+% ----------------------------
+% Print all known facts
+% ----------------------------
+list_facts :-
+    write('Known facts:'), nl,
+    forall(fact(X), (write('- '), write(X), nl)).
