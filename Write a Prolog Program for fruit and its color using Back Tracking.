@@ -1,0 +1,22 @@
+% ----------------------------
+% FACTS
+% ----------------------------
+
+color(apple, red).
+color(banana, yellow).
+color(grape, green).
+color(grape, purple).
+color(orange, orange).
+color(mango, yellow).
+color(cherry, red).
+color(watermelon, green).
+
+% ----------------------------
+% RULES
+% ----------------------------
+
+% Find color of a fruit
+fruit_color(Fruit, Color) :- color(Fruit, Color).
+
+% Find all fruits of a given color
+fruits_of_color(Color, Fruit) :- color(Fruit, Color).
