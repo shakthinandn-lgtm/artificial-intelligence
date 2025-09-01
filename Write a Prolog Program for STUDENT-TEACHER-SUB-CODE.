@@ -1,0 +1,57 @@
+% ------------------------------
+% STUDENT – TEACHER – SUBJECT CODE
+% ------------------------------
+
+% student(StudentName, RollNo).
+student('Arjun', 101).
+student('Meena', 102).
+student('Karthik', 103).
+student('Priya', 104).
+
+% teacher(TeacherName, EmpID).
+teacher('Dr.Ravi', t01).
+teacher('Prof.Saritha', t02).
+teacher('Dr.Arun', t03).
+
+% subject(SubjectCode, SubjectName).
+subject(cs101, 'Artificial Intelligence').
+subject(cs102, 'Data Structures').
+subject(cs103, 'Database Systems').
+
+% teaches(TeacherName, SubjectCode).
+teaches('Dr.Ravi', cs101).
+teaches('Prof.Saritha', cs102).
+teaches('Dr.Arun', cs103).
+
+% enrolled(StudentName, SubjectCode).
+enrolled('Arjun', cs101).
+enrolled('Meena', cs101).
+enrolled('Karthik', cs102).
+enrolled('Priya', cs103).
+enrolled('Arjun', cs102).
+enrolled('Meena', cs103).
+
+% ------------------------------
+% RULES
+% ------------------------------
+
+% find Teacher for a given Student and Subject
+teacher_of(Student, SubjectName, Teacher) :-
+    enrolled(Student, Code),
+    subject(Code, SubjectName),
+    teaches(Teacher, Code).
+
+% find all Subjects for a Student
+subjects_of(Student, Subjects) :-
+    findall(Name, (enrolled(Student, C), subject(C, Name)), Subjects).
+
+% find all Students under a Teacher
+students_of_teacher(Teacher, Students) :-
+    teaches(Teacher, Code),
+    findall(Student, enrolled(Student, Code), Students).
+
+% find which teacher handles which subject for a given student
+student_teacher(Student, Teacher, SubjectName) :-
+    enrolled(Student, Code),
+    teaches(Teacher, Code),
+    subject(Code, SubjectName).
