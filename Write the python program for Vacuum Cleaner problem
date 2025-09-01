@@ -1,0 +1,28 @@
+def vacuum_world():
+    # Initial states: 0 = Clean, 1 = Dirty
+    state = {'A': 1, 'B': 1}   # both dirty initially
+    vacuum_pos = 'A'           # vacuum starts at A
+    steps = 0
+
+    print("Initial State:", state, "| Vacuum at", vacuum_pos)
+
+    while state['A'] == 1 or state['B'] == 1:
+        if state[vacuum_pos] == 1:
+            print(f"Location {vacuum_pos} is Dirty → Clean it.")
+            state[vacuum_pos] = 0
+        else:
+            print(f"Location {vacuum_pos} is already Clean.")
+
+        # Move to the other location if needed
+        if vacuum_pos == 'A':
+            vacuum_pos = 'B'
+        else:
+            vacuum_pos = 'A'
+
+        steps += 1
+        print("Current State:", state, "| Vacuum at", vacuum_pos)
+
+    print("\nAll locations are clean in", steps, "steps.")
+
+if __name__ == "__main__":
+    vacuum_world()
