@@ -1,0 +1,70 @@
+% ----------------------------
+% FACTS
+% ----------------------------
+
+% father(Father, Child)
+father(ram, ravi).
+father(ram, rani).
+father(ravi, arjun).
+father(ravi, anita).
+father(mahesh, ram).
+
+% mother(Mother, Child)
+mother(sita, ravi).
+mother(sita, rani).
+mother(lakshmi, arjun).
+mother(lakshmi, anita).
+
+% gender facts
+male(ram).
+male(ravi).
+male(arjun).
+male(mahesh).
+
+female(sita).
+female(rani).
+female(lakshmi).
+female(anita).
+
+% ----------------------------
+% RULES
+% ----------------------------
+
+% parent relationship
+parent(X, Y) :- father(X, Y).
+parent(X, Y) :- mother(X, Y).
+
+% grandparent
+grandparent(X, Y) :-
+    parent(X, Z),
+    parent(Z, Y).
+
+% sibling (share at least one parent)
+sibling(X, Y) :-
+    parent(Z, X),
+    parent(Z, Y),
+    X \= Y.
+
+% brother
+brother(X, Y) :-
+    sibling(X, Y),
+    male(X).
+
+% sister
+sister(X, Y) :-
+    sibling(X, Y),
+    female(X).
+
+% cousin (parents are siblings)
+cousin(X, Y) :-
+    parent(P1, X),
+    parent(P2, Y),
+    sibling(P1, P2),
+    X \= Y.
+
+% ancestor (recursive)
+ancestor(X, Y) :-
+    parent(X, Y).
+ancestor(X, Y) :-
+    parent(X, Z),
+    ancestor(Z, Y).
