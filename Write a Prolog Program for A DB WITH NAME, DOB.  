@@ -1,0 +1,85 @@
+% ---------------------------
+% people_db.pl
+% ---------------------------
+
+:- dynamic person/2.
+% person(Name, dob(Year,Month,Day))
+
+% --- Sample facts (you can edit or add using add_person/4) ---
+person('Alice', dob(1990,5,12)).
+person('Bob',   dob(1985,12,30)).
+person('Carol', dob(2000,1,25)).
+person('Dan',   dob(1978,9,3)).
+
+% ---------------------------
+% Add / Remove / Update
+% ---------------------------
+
+% add_person(+Name, +Year, +Month, +Day)
+add_person(Name, Y, M, D) :-
+    retractall(person(Name, _)),       % remove existing (optional: keep unique by name)
+    assertz(person(Name, dob(Y,M,D))).
+
+% remove_person(+Name)
+remove_person(Name) :-
+    retractall(person(Name, _)).
+
+% update_dob(+Name, +Year, +Month, +Day)
+update_dob(Name, Y, M, D) :-
+    remove_person(Name),
+    assertz(person(Name, dob(Y,M,D))).
+
+% ---------------------------
+% Simple queries
+% ---------------------------
+
+% born_in(+Year, -Name)
+born_in(Year, Name) :-
+    person(Name, dob(Year, _, _)).
+
+% born_on(+Month, +Day, -Name)
+born_on(Month, Day, Name) :-
+    person(Name, dob(_, Month, Day)).
+
+% list_people(-ListOfNameDOB)
+list_people(List) :-
+    findall(Name-dob(Y,M,D), person(Name, dob(Y,M,D)), List).
+
+% ---------------------------
+% Age computation
+% ---------------------------
+% age(+Name, +CurrY, +CurrM, +CurrD, -Age)
+% compute Age of Name at the given current date CurrY-CurrM-CurrD.
+age(Name, CurrY, CurrM, CurrD, Age) :-
+    person(Name, dob(Y, M, D)),
+    Base is CurrY - Y,
+    (   (CurrM > M)
+    ;   (CurrM = M, CurrD >= D)
+    )
+    -> Age = Base
+    ;  Age is Base - 1.
+
+% list_with_ages(+CurrY,+CurrM,+CurrD,-List) 
+% returns list of Name-Age pairs for all people
+list_with_ages(CY,CM,CD, List) :-
+    findall(Name-Age, (person(Name, _), age(Name, CY,CM,CD, Age)), List).
+
+% ---------------------------
+% Example utility predicates
+% ---------------------------
+
+% oldest(-Name, -DOB)
+oldest(Name, dob(Y,M,D)) :-
+    findall(dob(Y1,M1,D1), person(_, dob(Y1,M1,D1)), DOBs),
+    sort(DOBs, Sorted),           % earlier dates come first if formatted as dob(Y,M,D)
+    Sorted = [dob(Y,M,D)|_],
+    person(Name, dob(Y,M,D)).
+
+% born_between(+Y1,+Y2,-Name)  inclusive years
+born_between(Y1, Y2, Name) :-
+    person(Name, dob(Y,_,_)),
+    Y >= Y1, Y =< Y2.
+
+% ---------------------------
+% End of file
+% ---------------------------
