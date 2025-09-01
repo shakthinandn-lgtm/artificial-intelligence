@@ -1,0 +1,37 @@
+% ----------------------------
+% Check if a character is a vowel
+% ----------------------------
+vowel(a).
+vowel(e).
+vowel(i).
+vowel(o).
+vowel(u).
+vowel(A) :- atom_chars(A,[C]), vowel(C).  % allow atoms too
+
+% ----------------------------
+% Count vowels in a list of characters
+% ----------------------------
+count_vowels([], 0).
+
+count_vowels([H|T], Count) :-
+    vowel(H), !,
+    count_vowels(T, Rest),
+    Count is Rest + 1.
+
+count_vowels([_|T], Count) :-
+    count_vowels(T, Count).
+
+% ----------------------------
+% Main predicate: count vowels in a word
+% ----------------------------
+vowel_count(Word, Count) :-
+    atom_chars(Word, Chars),
+    maplist(lowercase_char, Chars, LowerChars),   % handle uppercase
+    count_vowels(LowerChars, Count).
+
+% Convert uppercase letters to lowercase
+lowercase_char(Char, Lower) :-
+    char_type(Char, upper), !,
+    char_type(Lower, to_lower(Char)).
+
+lowercase_char(Char, Char).
