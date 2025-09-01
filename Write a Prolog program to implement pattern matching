@@ -1,0 +1,30 @@
+% ----------------------------
+% Pattern Matching Rules
+% ----------------------------
+
+% Empty pattern matches empty word
+match([], []).
+
+% '*' matches zero or more characters
+match(['*'|PatternTail], Word) :-
+    match(PatternTail, Word).  % '*' matches zero characters
+
+match(['*'|PatternTail], [_|WordTail]) :-
+    match(['*'|PatternTail], WordTail).  % '*' matches one or more characters
+
+% '_' matches exactly one character
+match(['_'|PatternTail], [_|WordTail]) :-
+    match(PatternTail, WordTail).
+
+% Exact character match
+match([Char|PatternTail], [Char|WordTail]) :-
+    Char \= '*', Char \= '_',
+    match(PatternTail, WordTail).
+
+% ----------------------------
+% Main Predicate
+% ----------------------------
+pattern_match(PatternAtom, WordAtom) :-
+    atom_chars(PatternAtom, PatternList),
+    atom_chars(WordAtom, WordList),
+    match(PatternList, WordList).
